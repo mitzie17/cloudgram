@@ -6,6 +6,7 @@ import SignupForm from "@/_auth/forms/SignupForm";
 import SigninForm from "@/_auth/forms/SigninForm";
 
 import "./globals.css";
+import { Home } from "./_root/pages";
 
 // This is the app's primary routing component
 // By wrapping BrowserRouter around App, we can import Routes and Route in App
