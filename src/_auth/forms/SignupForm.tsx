@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { SignupValidation } from "@/lib/validation";
 import { z } from "zod";
 import { Loader } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const SignupForm = () => {
   const isLoading = false;
@@ -45,7 +46,7 @@ const SignupForm = () => {
           Create a new account
         </h2>
         <p className="text-light-3 small-medium md:base-regular">
-          To use cloudGram, enter your details
+          To use cloudGram, please enter your details
         </p>
 
         <form
@@ -116,6 +117,16 @@ const SignupForm = () => {
               "Sign up"
             )}
           </Button>
+
+          <p className="text-small-regular text-light-2 text-center mt-2">
+            Already have an account?
+            <Link
+              to="/sign-in"
+              className="text-primary-500 text-small-semibold ml-1"
+            >
+              Log in
+            </Link>
+          </p>
         </form>
       </div>
     </Form>
