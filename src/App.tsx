@@ -7,6 +7,7 @@ import SigninForm from "./_auth/forms/SigninForm";
 
 import "./globals.css";
 import { Home } from "./_root/pages";
+import { Toaster } from "@/components/ui/toaster";
 
 // This is the app's primary routing component
 // By wrapping BrowserRouter around App, we can import Routes and Route in App
@@ -25,6 +26,8 @@ const App = () => {
           <Route index element={<Home />} />
         </Route>
       </Routes>
+
+      <Toaster />
     </main>
   );
 };
