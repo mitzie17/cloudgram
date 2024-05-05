@@ -1,5 +1,14 @@
 // Files contains (typescript) types used in application
 
+export type IContextType = {
+  user: IUser;
+  isLoading: boolean;
+  setUser: React.Dispatch<React.SetStateAction<IUser>>;
+  isAuthenticated: boolean;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  checkAuthUser: () => Promise<boolean>;
+};
+
 export type INavLink = {
   imgURL: string;
   route: string;
