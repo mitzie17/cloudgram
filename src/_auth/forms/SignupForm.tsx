@@ -3,23 +3,36 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 
+import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SignupValidation } from "@/lib/validation";
 import { z } from "zod";
 import { Loader } from "lucide-react";
 import { Link } from "react-router-dom";
-import { createUserAccount } from "@/lib/appwrite/api";
+import {
+  useCreateUserAccount,
+  useSignInAccount,
+} from "@/lib/react-query/queriesAndMutations";
 
 const SignupForm = () => {
-  const isLoading = false;
+  const { toast } = useToast();
+
+  // mutateAsync is the function being called in queriesAndMutations, that is the createUserAccount function in line 15
+  // the mutateAsync function can be renamed, in this case it is renamed as createUserAccount
+  // isLoading can also be renamed, in this case it is renamed to isCreatingUser
+  const { mutateAsync: createUserAccount, isLoading: isCreatingUser } =
+    useCreateUserAccount();
+
+  const { mutateAsync: signInAccount, isLoading: isSigningIn } =
+    useSignInAccount();
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
@@ -36,7 +49,20 @@ const SignupForm = () => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     const newUser = await createUserAccount(values);
-    console.log(newUser);
+
+    if (!newUser) {
+      return toast({ title: "Sign up failed. Please try again." });
+    }
+
+    // values are coming from the form fields
+    const session = await signInAccount({
+      email: values.email,
+      password: values.password,
+    });
+
+    if (!session) {
+      return toast({ title: "Sign in failed. Please try again." });
+    }
   }
 
   return (
@@ -111,7 +137,7 @@ const SignupForm = () => {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-            {isLoading ? (
+            {isCreatingUser ? (
               <div className="flex-center">
                 <Loader /> Loading...
               </div>
