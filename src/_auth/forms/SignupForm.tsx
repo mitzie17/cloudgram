@@ -15,22 +15,25 @@ import { Button } from "@/components/ui/button";
 import { SignupValidation } from "@/lib/validation";
 import { z } from "zod";
 import { Loader } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   useCreateUserAccount,
   useSignInAccount,
 } from "@/lib/react-query/queriesAndMutations";
+import { useUserContext } from "@/context/AuthContext";
 
 const SignupForm = () => {
   const { toast } = useToast();
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const navigate = useNavigate();
 
   // mutateAsync is the function being called in queriesAndMutations, that is the createUserAccount function in line 15
   // the mutateAsync function can be renamed, in this case it is renamed as createUserAccount
   // isLoading can also be renamed, in this case it is renamed to isCreatingUser
-  const { mutateAsync: createUserAccount, isLoading: isCreatingUser } =
+  const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
     useCreateUserAccount();
 
-  const { mutateAsync: signInAccount, isLoading: isSigningIn } =
+  const { mutateAsync: signInAccount, isPending: isSigningIn } =
     useSignInAccount();
 
   // 1. Define your form.
@@ -45,23 +48,37 @@ const SignupForm = () => {
   });
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof SignupValidation>) {
+  async function onSubmit(user: z.infer<typeof SignupValidation>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    const newUser = await createUserAccount(values);
+    const newUser = await createUserAccount(user);
 
     if (!newUser) {
-      return toast({ title: "Sign up failed. Please try again." });
+      toast({ title: "Sign up failed. Please try again." });
+      return;
     }
 
     // values are coming from the form fields
     const session = await signInAccount({
-      email: values.email,
-      password: values.password,
+      email: user.email,
+      password: user.password,
     });
 
     if (!session) {
-      return toast({ title: "Sign in failed. Please try again." });
+      toast({ title: "Sign in failed. Please try again." });
+      navigate("/sign-in");
+      return;
+    }
+
+    const isLoggedIn = await checkAuthUser();
+
+    if (isLoggedIn) {
+      form.reset();
+
+      navigate("/");
+    } else {
+      toast({ title: "Sign up failed. Please try again." });
+      return;
     }
   }
 
@@ -137,7 +154,7 @@ const SignupForm = () => {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-            {isCreatingUser ? (
+            {isCreatingAccount ? (
               <div className="flex-center">
                 <Loader /> Loading...
               </div>
