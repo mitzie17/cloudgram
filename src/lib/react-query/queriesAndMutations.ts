@@ -1,14 +1,16 @@
 // These imports are needed from ReactQuery (aka tanStack Query). useQuery is needed for fetching data, while
 // useMutation is needed for modifying data. ReactQuery (tanStack Query) simplifies data fectching and mutation while
 // allowing to get all the benefits of caching, infinite scrolling, etc.
-import { INewUser } from "@/types";
+import { INewPost, INewUser } from "@/types";
 import {
   useQuery,
   useMutation,
   useQueryClient,
   useInfiniteQuery,
+  QueryClient,
 } from "@tanstack/react-query";
 import {
+  createPost,
   createUserAccount,
   signInAccount,
   signOutAccount,
@@ -33,4 +35,13 @@ export const useSignOutAccount = () => {
   });
 };
 
-export const useCreatePost = () => {};
+export const useCreatePost = () => {
+  return useMutation({
+    mutationFn: (post: INewPost) => createPost(post),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: "getRecentPosts",
+      });
+    },
+  });
+};
