@@ -12,9 +12,11 @@ import {
 import {
   createPost,
   createUserAccount,
+  getRecentPosts,
   signInAccount,
   signOutAccount,
 } from "../appwrite/api";
+import { QUERY_KEYS } from "./queryKeys";
 
 export const useCreateUserAccount = () => {
   return useMutation({
@@ -36,12 +38,21 @@ export const useSignOutAccount = () => {
 };
 
 export const useCreatePost = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (post: INewPost) => createPost(post),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: "getRecentPosts",
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
       });
     },
+  });
+};
+
+// REMINDER: queryFn is a function coming from appwrite
+export const useGetRecentPosts = () => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+    queryFn: getRecentPosts,
   });
 };
