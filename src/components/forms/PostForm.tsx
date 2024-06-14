@@ -25,7 +25,7 @@ type PostFormProps = {
   post?: Models.Document;
 };
 
-const PostForm = ({ post }: PostFormProps) => {
+const PostForm = ({ post, action }: PostFormProps) => {
   const { toast } = useToast();
   const { user } = useUserContext();
   const navigate = useNavigate();
