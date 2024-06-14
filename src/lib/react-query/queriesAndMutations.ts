@@ -14,6 +14,7 @@ import {
   createUserAccount,
   deleteSavedPost,
   getCurrentUser,
+  getPostById,
   getRecentPosts,
   likePost,
   savePost,
@@ -132,5 +133,16 @@ export const useGetCurrentUser = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_CURRENT_USER],
     queryFn: getCurrentUser,
+  });
+};
+
+// The enabled property enables the fetching only when we are fetching data for another postId, if the
+// fetching is for the same postId then we will get the same details. This allows to fetch and cache data
+// more efficiently.
+export const useGetPostById = (postId: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],
+    queryFn: () => getPostById(postId),
+    enabled: !!postId,
   });
 };
