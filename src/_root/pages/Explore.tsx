@@ -6,6 +6,9 @@ import { useState } from "react";
 const Explore = () => {
   const [searchValue, setSearchValue] = useState("");
 
+  const { data: searchedPosts, isFetching: isSearchFetching } =
+    useSearchPosts(searchValue);
+
   //const posts = [];
 
   // const shouldShowSearchResults = searchValue !== "";
